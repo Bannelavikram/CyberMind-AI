@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberMind AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-black: #0a0a0a;
+            --card-dark: #141414;
+            --accent-cyan: #00e5ff;
+            --text-gray: #a0a0a0;
+            --text-white: #ffffff;
+            --border-color: #262626;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--text-white);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- Header --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: var(--bg-black);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-icon {
+            color: var(--accent-cyan);
+            font-size: 24px;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-gray);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #00ff88;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #00ff88;
+        }
+
+        /* --- Mode Selector --- */
+        .mode-container {
+            display: flex;
+            gap: 10px;
+            padding: 0 40px;
+            margin-bottom: 30px;
+        }
+
+        .mode-btn {
+            background: transparent;
+            color: var(--text-white);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .mode-btn:hover {
+            border-color: #444;
+        }
+
+        .mode-btn.active {
+            background-color: var(--accent-cyan);
+            color: #000;
+            border-color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        /* --- Chat Area --- */
+        .chat-window {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .chat-window::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+        }
+
+        .message-row {
+            display: flex;
+            gap: 15px;
+            max-width: 85%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-row.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .ai-avatar {
+            background-color: var(--accent-cyan);
+            color: #000;
+        }
+
+        .user-avatar {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .bubble {
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-size: 15px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .ai-bubble {
+            background-color: var(--card-dark);
+            border: 1px solid var(--border-color);
+            color: var(--text-white);
+            border-top-left-radius: 2px;
+        }
+
+        .user-bubble {
+            background-color: #1e1e1e;
+            color: var(--text-white);
+            border: 1px solid #333;
+            border-top-right-radius: 2px;
+        }
+
+        /* --- Input Area --- */
+        .input-section {
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .input-wrapper {
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        #user-input {
+            width: 100%;
+            background-color: var(--card-dark);
+            border: 1px solid var(--border-color);
+            padding: 18px 60px 18px 20px;
+            border-radius: 12px;
+            color: var(--text-white);
+            font-size: 15px;
+            outline: none;
+            transition: border 0.3s ease;
+        }
+
+        #user-input:focus {
+            border-color: #444;
+        }
+
+        .send-btn {
+            position: absolute;
+            right: 12px;
+            background-color: var(--accent-cyan);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+            background-color: #00cce6;
+        }
+
+        .send-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: #000;
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: #444;
+            margin-bottom: 10px;
+        }
+
+        /* Typing Indicator */
+        .typing {
+            font-size: 13px;
+            color: var(--text-gray);
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <span class="logo-icon">❖</span> CyberMind AI
+        </div>
+        <div class="system-status">
+            <div class="status-dot"></div>
+            System Online
+        </div>
+    </header>
+
+    <div class="mode-container">
+        <button class="mode-btn active" data-mode="chat">Chat Mode</button>
+        <button class="mode-btn" data-mode="attack_sim">Threat Sim</button>
+        <button class="mode-btn" data-mode="recon">Recon Mode</button>
+        <button class="mode-btn" data-mode="code_analysis">Code Analysis</button>
+    </div>
+
+    <div class="chat-window" id="chat-window">
+        <!-- Initial Message -->
+        <div class="message-row">
+            <div class="avatar ai-avatar">AI</div>
+            <div class="bubble ai-bubble">Welcome to CyberMind. Select a mode and initialize protocol.</div>
+        </div>
+    </div>
+
+    <div class="input-section">
+        <div id="typing-indicator" class="typing hidden">CyberMind is analyzing...</div>
+        <div class="input-wrapper">
+            <input type="text" id="user-input" placeholder="Enter command or query..." autocomplete="off">
+            <button class="send-btn" id="send-btn">
+                <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+            </button>
+        </div>
+        <div class="footer-text">Powered by Ollama Multi-Model Pipeline</div>
+    </div>
+
+    <script>
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const chatWindow = document.getElementById('chat-window');
+        const typingInd = document.getElementById('typing-indicator');
+        const modeBtns = document.querySelectorAll('.mode-btn');
+
+        let currentMode = 'chat';
+
+        // Mode Switching
+        modeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                modeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentMode = btn.getAttribute('data-mode');
+            });
+        });
+
+        function appendMessage(role, text) {
+            const row = document.createElement('div');
+            row.className = `message-row ${role}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = `avatar ${role === 'ai' ? 'ai-avatar' : 'user-avatar'}`;
+            avatar.textContent = role === 'ai' ? 'AI' : 'U';
+
+            const bubble = document.createElement('div');
+            bubble.className = `bubble ${role === 'ai' ? 'ai-bubble' : 'user-bubble'}`;
+            bubble.textContent = text;
+
+            row.appendChild(avatar);
+            row.appendChild(bubble);
+            chatWindow.appendChild(row);
+            
+            // Scroll to bottom
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        async function handleSend() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            // User Message
+            appendMessage('user', text);
+            userInput.value = '';
+
+            // AI Thinking
+            typingInd.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        message: text, 
+                        mode: currentMode 
+                    })
+                });
+
+                const data = await response.json();
+                appendMessage('ai', data.response);
+            } catch (error) {
+                appendMessage('ai', "❌ Error: Could not connect to CyberMind Core.");
+            } finally {
+                typingInd.classList.add('hidden');
+            }
+        }
+
+        sendBtn.addEventListener('click', handleSend);
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+cat << EOF > ollama_pull_output.txt
+ollama pull --timeout=3600 --allow-errors --interactive
+ollama pull --allow-errors --args1 argument1 argument2
+ollama pull --allow-errors --args2 argument3 argument4
+EOF
